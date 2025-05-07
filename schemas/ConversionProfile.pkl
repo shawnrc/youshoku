@@ -1,0 +1,43 @@
+class ConversionProfile {
+    // TODO add renderer for XML attributes
+    // application = "XRFC"
+    // version = "1.12.0.0"
+
+}
+
+class Thirds {
+    wholeComponent: Int(isBetween(-3, 3)) = 0
+    fraction: 0 | 33 | 66 = 0
+}
+
+class PropertyGroup {
+    // TODO xml attribute renderer
+    // device: String   // e.g. "X100V"
+    // version: String  // e.g. "X100V_0200"
+    // label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
+
+    serialNumber: String
+    tetherRAWConditonCode: String  // same as PropertyGroup.version, also sic: missing second i in "Conditon"
+    editable: Boolean = true       // false in FP2/FP3 files
+    sourceFileName: String = ""    // source raw filename in FP3 data
+    fileError: String = "NONE"
+    rotationAngle: Int = 0         // may be enumerated (0, 90, 180)?
+    structVer: Int = 65536         // need to verify if this applies to all bodies
+    iopCode: String = "FF159504"   // verify cross-device applicability
+    shootingCondition: "OFF" | "ON" = "OFF"  // not sure what this does
+    fileType: "JPG" = "JPG"
+    imageSize: "L3x2"
+        | "L16x9"
+        | "L1x1"
+        | "M3x2"
+        | "M16x9"
+        | "M1x1"
+        | "S3x2"
+        | "S16x9"
+        | "S1x1" = "L3x2"
+    imageQuality: "Fine" | "Normal" = "Fine"
+    exposureBias: Thirds
+    dynamicRange: 100 | 200 | 400 = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
+    wideDRange: "0" | "P1" | "P2" = "0"  // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
+
+}
