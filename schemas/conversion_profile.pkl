@@ -1,0 +1,115 @@
+import "filmSimulation.pkl"
+
+class ConversionProfile {
+    // TODO add renderer for XML attributes
+    // application = "XRFC"
+    // version = "1.12.0.0"
+    propertyGroup: PropertyGroup
+}
+
+class PropertyGroup {
+    // TODO xml attribute renderer
+    // device: String   // e.g. "X100V"
+    // version: String  // e.g. "X100V_0200"
+    // label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
+
+    serialNumber: String(length == 30)
+    tetherRAWConditonCode: String  // same as PropertyGroup.version, also sic: missing second i in "Conditon"
+    editable: Boolean = true       // false in FP3 files
+    sourceFileName: String         // source raw filename in FP3 data
+    fileError: String = "NONE"
+    rotationAngle: Int = 0         // may be enumerated (0, 90, 180)?
+    structVer: Int = 65536         // need to verify if this applies to all bodies
+    iopCode: IOPCode
+    shootingCondition: *"OFF"|"ON"  // not sure what this does
+    fileType: *"JPG"
+    imageSize:
+        *"L3x2"
+        |"L16x9"
+        |"L1x1"
+        |"M3x2"
+        |"M16x9"
+        |"M1x1"
+        |"S3x2"
+        |"S16x9"
+        |"S1x1"
+    imageQuality: *"Fine"|"Normal"
+    exposureBias: Thirds
+    dynamicRange: Int(isValidDynamicRange) = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
+    wideDRange: *"0"|"P1"|"P2"       // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
+    filmSimulation: FilmSimulation   // simulations are defined by the camera
+    blackImageTone: Int8 = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
+    monochromaticColor_RG: Int8 = 0  // Monochromatic Color MG (Magenta/Green) component
+    grainEffect: Strength = "OFF"
+    grainEffectSize: "LARGE"|*"SMALL"
+    chromeEffect: Strength = "OFF"     // Color Chrome Effect
+    colorChromeBlue: Strength = "OFF"  // Color Chrome FX Blue
+    smoothSkinEffect: "ON"|*"OFF"
+    wbShootCond: "ON"|*"OFF"
+    whiteBalance:
+        "Auto"           // Auto White Balance
+        | "Custom1"      // Custom 1
+        | "Custom2"      // Custom 2
+        | "Custom3"      // Custom 3
+        | "Temperature"  // Temperature
+        | "Daylight"     // Daylight
+        | "Shade"        // Shade
+        | "FLight1"      // Fluorescent Light-1
+        | "FLight2"      // Fluorescent Light-2
+        | "FLight3"      // Fluorescent Light-3
+        | "Incand"       // Incendescent
+        | "UWater"       // Underwater
+    wbShiftR: Int8
+    wbShiftB: Int8
+    wbColorTemp: WBColorTemp
+    highlightTone: Float
+    shadowTone: Float  // these were Ints up until the X-Trans V
+    color: Int8        // ignored with b&w
+    sharpness: Int8
+    noisReduction: Int8  // spelled as such
+    clarity: Int8
+    lensModulationOpt: *"ON"|"OFF"
+    colorSpace: *"sRGB"|"AdobeRGB"
+    hdr:  // any enabled mode disables DR, DR-P, Tone Curve, and Clarity
+        *""
+        | "200"
+        | "400"
+        | "800"
+        | "800PLUS"
+    digitalTeleConv: "ON"|*"OFF"
+    portraitEnhancer: String
+}
+
+const local isValidDynamicRange = (value) ->
+    Set(100, 200, 400).contains(value)
+
+
+/// A fractional value incremented in thirds.
+/// The output format is /[PM]\dP\d\d/
+/// P/M seems to indicate Plus or Minus. Zero is signed.
+/// The first digit indicates whole stops, and the second digits indicate thirds in decimal.
+///
+/// ex.
+/// M2P00 = -2
+/// P1P67 = +1 2/3
+class Thirds {
+    // TODO string renderer
+    wholeComponent: Int(isBetween(-2, 3)) = 0
+    fraction: Int(Set(0, 33, 67).contains)
+}
+
+class WBColorTemp {  // TODO string renderer (add K)
+    value: Int(isBetween(2500, 10000)) = 10000  // TODO custom validator to ensure steps of 10K
+}
+
+typealias Strength = "STRONG"|"WEAK"|"OFF"
+
+/// Possibly identifies the image processor
+typealias IOPCode =
+    "FA179502"    // X-Processor V: X-T5
+    | "FF129502"  // X-Processor Pro2: X-T2
+    | "FF129504"  // X-Processor Pro2: X100F
+    | "FF129506"  // X-Processor Pro2: X-H1
+    | "FF159501"  // X-Processor IV: X-T4, X-T3
+    | "FF159504"  // X-Processor IV: X100V
+    | "FF159505"  // Unknown (X-T50?)

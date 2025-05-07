@@ -1,6 +1,6 @@
-import "FilmRecipe.pkl"
+import "recipe.pkl"
 
-open class X100VRecipe extends FilmRecipe.FilmRecipe {
+open class X100VRecipe extends recipe.FilmRecipe {
     filmSimulation:
         "Provia"
         | "Velvia"
@@ -31,9 +31,15 @@ open class X100VRecipe extends FilmRecipe.FilmRecipe {
         | "Fluorescent Light-2"
         | "Fluorescent Light-3"
         | "Incendescent"
-        | "Underwater" = "Auto"
+        | "Underwater"
+    wbShiftRed: Int
+    wbShiftBlue: Int
     highlight: Int(isBetween(-2, 4))
     shadow: Int(isBetween(-2, 4))
     color: Int(isBetween(-4, 4))
-    maxIso: Int(Set(160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400).contains)
+    maxIso: Int(isValidIso)
 }
+
+const local isValidIso = (value) ->
+    Set(160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400)
+        .contains(value)

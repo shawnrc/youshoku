@@ -32,11 +32,6 @@ strongest), so this should be a toggleable when converting from PKL to FP1.
 (I think 100 might be better because I'd rather err towards a wider dynamic
 range than a narrower one that might unintuively look washed out).
 
-### IOPCodes
-
-While it's not clear what purpose these serve, ConversionProfiles contain
-IOPCode values that seem to change depending on the camera model.
-
 ### Dynamic Range, D Range Priority, and HDR
 
 All three of these settings are mutually-exclusive. HDR even turns off other

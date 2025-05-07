@@ -1,5 +1,0 @@
-import "X100VRecipe.pkl"
-
-superiaXtra400 = new X100VRecipe.X100VRecipe {
-
-}

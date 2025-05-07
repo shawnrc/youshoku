@@ -2,15 +2,15 @@ abstract class FilmRecipe {
     metadata: RecipeMetadata
 
     name: String(!isEmpty)
-    // filmSimulation: implemented per camera
+    filmSimulation: String
     monochromaticColorWC: Int(isBetween(-18, 18)) = 0
     monochromaticColorMG: Int(isBetween(-18, 18)) = 0
     grainEffect: Strength = "Off"
-    grainSize: "Large" | "Small" = "Small"
+    grainSize: "Large"|*"Small"
     colorChromeEffect: Strength = "Off"
     colorChromeFxBlue: Strength = "Off"
-    // whiteBalance: implemented per camera
-    dynamicRange: Int(Set(100, 200, 400).contains)? = 100
+    abstract whiteBalance: String
+    dynamicRange: Int(isValidDynamicRange)? = 100
     dRangePriority: Strength = "Off"
     // highlight: implemented per camera
     // shadow: implemented per camera
@@ -33,4 +33,7 @@ class Person {
     url: Uri?
 }
 
-typealias Strength = "Strong" | "Weak" | "Off"
+typealias Strength = "Strong"|"Weak"|*"Off"
+
+const local isValidDynamicRange = (value) ->
+    Set(100, 200, 400).contains(value)
