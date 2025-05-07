@@ -104,8 +104,9 @@ class WBColorTemp {  // TODO string renderer (add K)
 
 typealias Strength = "STRONG"|"WEAK"|"OFF"
 
-/// Possibly identifies the image processor
-typealias IOPCode =
+/// bytearray containing processor version, color space, and other (unknown) options
+/// AND with 0x00FFFF00 to get the processor version
+typealias IOPCode = // these are hex values but rendered as strings in xml
     "FA179502"    // X-Processor V: X-T5
     | "FF129502"  // X-Processor Pro2: X-T2
     | "FF129504"  // X-Processor Pro2: X100F
