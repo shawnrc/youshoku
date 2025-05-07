@@ -34,7 +34,7 @@ class PropertyGroup {
         |"S16x9"
         |"S1x1"
     imageQuality: *"Fine"|"Normal"
-    exposureBias: Thirds
+    exposureBias: Thirds  // Push/pull processing
     dynamicRange: Int(isValidDynamicRange) = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
     wideDRange: *"0"|"P1"|"P2"       // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
     filmSimulation: FilmSimulation   // simulations are defined by the camera

@@ -1,18 +1,6 @@
 import "x100VRecipe.pkl"
 
 superiaXtra400 = new x100VRecipe.X100VRecipe {
-    metadata {
-        author {
-            name = "Ritchie Roesch"
-            url = "https://ritchieroesch.com/"
-        }
-        transcriber {
-            name = "Shawn Chowdhury"
-            url = "https://github.com/shawnrc"
-        }
-        source = "https://fujixweekly.com/2020/11/10/fujifilm-x100v-film-simulation-recipe-superia-xtra-400/"
-    }
-
     name = "Superia Xtra 400"
 
     filmSimulation = "Classic Negative"
@@ -25,6 +13,7 @@ superiaXtra400 = new x100VRecipe.X100VRecipe {
     wbShiftRed = 3
     wbShiftBlue = -5
 
+    dynamicRange = 400
     highlight = 0
     shadow = -1
     color = 4
@@ -32,4 +21,18 @@ superiaXtra400 = new x100VRecipe.X100VRecipe {
     noiseReduction = -4
     clarity = -2
     maxIso = 6400
+    exposureCompensation = "0 to +1"
+
+    metadata {
+        author {
+            name = "Ritchie Roesch"
+            url = "https://ritchieroesch.com/"
+        }
+        transcriber {
+            name = "Shawn Chowdhury"
+            url = "https://github.com/shawnrc"
+        }
+        source = "https://fujixweekly.com/2020/11/10/fujifilm-x100v-film-simulation-recipe-superia-xtra-400/"
+        date = "11/10/2020"
+    }
 }
