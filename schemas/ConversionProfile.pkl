@@ -1,3 +1,6 @@
+import "FilmSimulation.pkl"
+import "WhiteBalance.pkl"
+
 class ConversionProfile {
     // TODO add renderer for XML attributes
     // application = "XRFC"
@@ -5,12 +8,18 @@ class ConversionProfile {
     propertyGroup: PropertyGroup
 }
 
-// local oneOf = ()
-
+/// A way to store values incremented in thirds.
+/// The output format is /[PM]\dP\d\d/
+/// P/M seems to indicate Plus or Minus. Zero is signed.
+/// The first digit indicates whole stops, and the second digits indicate thirds in decimal.
+///
+/// ex.
+/// M2P00 = -2
+/// P1P67 = +1 2/3
 class Thirds {
     // TODO string renderer
-    wholeComponent: Int(isBetween(-3, 3)) = 0
-    fraction: Int(Set(0, 33, 66).contains)
+    wholeComponent: Int(isBetween(-2, 3)) = 0
+    fraction: Int(Set(0, 33, 67).contains)
 }
 
 class WBColorTemp {  // TODO string renderer (add K)
@@ -19,20 +28,31 @@ class WBColorTemp {  // TODO string renderer (add K)
 
 typealias Strength = "STRONG" | "WEAK" | "OFF"
 
+/// Unclear what this is required for, but it seems to be tied to model
+typealias IOPCode =
+    "FA179502"    // X-T5
+    | "FF129502"  // X-T2
+    | "FF129504"  // X100F
+    | "FF129506"  // X-H1
+    | "FF159501"  // X-T4 (maybe also X-T3?)
+    | "FF159504"  // X100V
+    | "FF159505"  // Unknown
+
+
 class PropertyGroup {
     // TODO xml attribute renderer
     // device: String   // e.g. "X100V"
     // version: String  // e.g. "X100V_0200"
     // label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
 
-    serialNumber: String
+    serialNumber: String(length == 30)
     tetherRAWConditonCode: String  // same as PropertyGroup.version, also sic: missing second i in "Conditon"
-    editable: Boolean = true       // false in FP2/FP3 files
-    sourceFileName: String = ""    // source raw filename in FP3 data
+    editable: Boolean = true       // false in FP3 files
+    sourceFileName: String         // source raw filename in FP3 data
     fileError: String = "NONE"
     rotationAngle: Int = 0         // may be enumerated (0, 90, 180)?
     structVer: Int = 65536         // need to verify if this applies to all bodies
-    iopCode: String = "FF159504"   // verify cross-device applicability
+    iopCode: IOPCode
     shootingCondition: "OFF" | "ON" = "OFF"  // not sure what this does
     fileType: "JPG" = "JPG"
     imageSize: "L3x2"
@@ -48,28 +68,28 @@ class PropertyGroup {
     exposureBias: Thirds
     dynamicRange: Int(Set(100, 200, 400).contains) = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
     wideDRange: "0" | "P1" | "P2" = "0"  // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
-    filmSimulation: String(!isEmpty)     // simulations are defined by the camera
-    blackImageTone: Int(isBetween(-18, 18)) = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
-    monochromaticColor_RG: Int(isBetween(-18, 18)) = 0  // Monochromatic Color MG (Magenta/Green) component
+    filmSimulation: FilmSimulation       // simulations are defined by the camera
+    blackImageTone: Int8 = 0             // Monochromatic Color WC (Warm/Cool) component. may be device-specific
+    monochromaticColor_RG: Int8 = 0      // Monochromatic Color MG (Magenta/Green) component
     grainEffect: Strength = "OFF"
     grainEffectSize: "LARGE" | "SMALL" = "SMALL"
     chromeEffect: Strength = "OFF"      // Color Chrome Effect
     colorChromeBlue: Strength = "OFF"   // Color Chrome FX Blue
-    smoothSkinEffect: String = "OFF"
+    smoothSkinEffect: "ON" | "OFF" = "OFF"
     wbShootCond: "ON" | "OFF" = "OFF"
-    whiteBalance: String(!isEmpty) = "Auto"
+    whiteBalance: WhiteBalance = "Auto"
     wbShiftR: Int8
     wbShiftB: Int8
     wbColorTemp: WBColorTemp
-    highlightTone: Int8
-    shadowTone: Int8
+    highlightTone: Float
+    shadowTone: Float // these were Ints up until the X-Trans V
     color: Int8  // ignored with b&w
     sharpness: Int8
     noisReduction: Int8  // spelled as such
     clarity: Int8
     lensModulationOpt: String = "ON"
     colorSpace: "sRGB" | "AdobeRGB" = "sRGB"
-    hdr: String
+    hdr: String  // any enabled mode disables DR, DR-P, Tone Curve, and Clarity
     digitalTeleConv: "ON" | "OFF" = "OFF"
     portraitEnhancer: String
 }

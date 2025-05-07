@@ -1,0 +1,28 @@
+/// A complete list of possible film simulation values in rendered ConversionProfiles
+///
+/// A subset of these must be specified in schemas for specific cameras, as not all
+/// cameras have all these simulations. Moreover, simulations are not strictly tied
+/// to sensors, and some cameras have sensors and image processors of differing
+/// generations.
+
+typealias FilmSimulation =
+    "Provia"           // PROVIA/STANDARD
+    | "Velvia"         // Velvia/VIVID
+    | "Astia"          // ASTIA/SOFT
+    | "Classic"        // CLASSIC CHROME
+    | "NEGAhi"         // PRO Neg. Hi
+    | "NEGAStd"        // PRO Neg. Std
+    | "ClassicNEGA"    // CLASSIC Neg.
+    | "NostalgicNEGA"  // Nostalgic Neg.
+                       // Reala Ace
+    | "Eterna"         // ETERNA/CINEMA
+                       // Eterna Bleach Bypass
+    | "Acros"          // ACROS
+    | "AcrosYe"        // ACROS+Ye FILTER
+    | "AcrosR"         // ACROS+R FILTER
+    | "AcrosG"         // ACROS+G FILTER
+    | "BW"             // MONOCHROME
+    | "BYe"            // MONOCHROME+Ye FILTER
+    | "BR"             // MONOCHROME+R FILTER
+    | "BG"             // MONOCHROME+G FILTER
+    | "Sepia"          // SEPIA

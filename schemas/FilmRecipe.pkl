@@ -1,0 +1,36 @@
+abstract class FilmRecipe {
+    metadata: RecipeMetadata
+
+    name: String(!isEmpty)
+    // filmSimulation: implemented per camera
+    monochromaticColorWC: Int(isBetween(-18, 18)) = 0
+    monochromaticColorMG: Int(isBetween(-18, 18)) = 0
+    grainEffect: Strength = "Off"
+    grainSize: "Large" | "Small" = "Small"
+    colorChromeEffect: Strength = "Off"
+    colorChromeFxBlue: Strength = "Off"
+    // whiteBalance: implemented per camera
+    dynamicRange: Int(Set(100, 200, 400).contains)? = 100
+    dRangePriority: Strength = "Off"
+    // highlight: implemented per camera
+    // shadow: implemented per camera
+    // color: implemented per camera
+    sharpness: Int(isBetween(-4, 4))
+    noiseReduction: Int(isBetween(-4, 4))
+    clarity: Int(isBetween(-5, 5))
+    // maxIso: implemented per camera
+    exposureCompensation: String?
+}
+
+class RecipeMetadata {
+    author: Person
+    transcriber: Person?
+    source: Uri?
+}
+
+class Person {
+    name: String
+    url: Uri?
+}
+
+typealias Strength = "Strong" | "Weak" | "Off"

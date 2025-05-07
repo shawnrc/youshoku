@@ -1,0 +1,39 @@
+import "FilmRecipe.pkl"
+
+open class X100VRecipe extends FilmRecipe.FilmRecipe {
+    filmSimulation:
+        "Provia"
+        | "Velvia"
+        | "Astia"
+        | "Classic Chrome"
+        | "Pro Neg. Hi"
+        | "Pro Neg. Std"
+        | "Classic Negative"
+        | "Eterna"
+        | "Acros"
+        | "Acros+Y"
+        | "Acros+R"
+        | "Acros+G"
+        | "Monochrome"
+        | "Monochrome+Y"
+        | "Monochrome+R"
+        | "Monochrome+G"
+        | "Sepia"
+    whiteBalance:
+        "Auto"
+        | "Custom 1"
+        | "Custom 2"
+        | "Custom 3"
+        | "Temperature"
+        | "Daylight"
+        | "Shade"
+        | "Fluorescent Light-1"
+        | "Fluorescent Light-2"
+        | "Fluorescent Light-3"
+        | "Incendescent"
+        | "Underwater" = "Auto"
+    highlight: Int(isBetween(-2, 4))
+    shadow: Int(isBetween(-2, 4))
+    color: Int(isBetween(-4, 4))
+    maxIso: Int(Set(160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400).contains)
+}
