@@ -1,4 +1,4 @@
-import "recipe.pkl"
+import "https://github.com/shawnrc/youshoku/raw/refs/heads/main/schemas/recipe.pkl"
 
 open class X100VRecipe extends recipe.FilmRecipe {
     filmSimulation:
@@ -32,11 +32,12 @@ open class X100VRecipe extends recipe.FilmRecipe {
         | "Fluorescent Light-3"
         | "Incendescent"
         | "Underwater"
-    wbShiftRed: Int
-    wbShiftBlue: Int
-    highlight: Int(isBetween(-2, 4))
-    shadow: Int(isBetween(-2, 4))
-    color: Int(isBetween(-4, 4))
+    wbShiftRed: Int(isBetween(-9, 9))
+    wbShiftBlue: Int(isBetween(-9, 9))
+    dynamicRange: "DR-Auto"|"DR100"|"DR200"|"DR400"|"DR-P Auto"|"DR-P Weak"|"DR-P Strong"
+    highlight: Int(isBetween(-2, 4))?
+    shadow: Int(isBetween(-2, 4))?
+    color: Int(isBetween(-4, 4))?
     maxIso: Int(isValidIso)
 }
 

@@ -13,7 +13,7 @@ superiaXtra400 = new x100VRecipe.X100VRecipe {
     wbShiftRed = 3
     wbShiftBlue = -5
 
-    dynamicRange = 400
+    dynamicRange = "DR400"
     highlight = 0
     shadow = -1
     color = 4
@@ -26,7 +26,7 @@ superiaXtra400 = new x100VRecipe.X100VRecipe {
     metadata {
         author {
             name = "Ritchie Roesch"
-            url = "https://ritchieroesch.com/"
+            url = "https://ritchieroesch.com"
         }
         transcriber {
             name = "Shawn Chowdhury"

@@ -1,22 +1,24 @@
 abstract class FilmRecipe {
     name: String(!isEmpty)
-    filmSimulation: String
+    filmSimulation: String(!isEmpty)
     monochromaticColorWC: Int(isBetween(-18, 18)) = 0
     monochromaticColorMG: Int(isBetween(-18, 18)) = 0
     grainEffect: Strength = "Off"
     grainSize: "Large"|*"Small"
     colorChromeEffect: Strength = "Off"
     colorChromeFxBlue: Strength = "Off"
-    abstract whiteBalance: String
-    dynamicRange: "DR-Auto"|"DR100"|"DR200"|"DR400"
-    dRangePriority: Strength = "Off"
-    // highlight: implemented per camera
-    // shadow: implemented per camera
-    // color: implemented per camera
+    abstract whiteBalance: String(!isEmpty)
+    wbColorTemp: Int(isValidColorTemp)?
+    abstract wbShiftRed: Int
+    abstract wbShiftBlue: Int
+    abstract dynamicRange: String(!isEmpty)
+    abstract highlight: Number?
+    abstract shadow: Number?
+    abstract color: Number?
     sharpness: Int(isBetween(-4, 4))
     noiseReduction: Int(isBetween(-4, 4))
     clarity: Int(isBetween(-5, 5))
-    // maxIso: implemented per camera
+    abstract maxIso: Int
     exposureCompensation: String?
 
     metadata: RecipeMetadata
@@ -35,3 +37,6 @@ class Person {
 }
 
 typealias Strength = "Strong"|"Weak"|*"Off"
+
+const local isValidColorTemp = (temp: Int) ->
+    temp.isBetween(2500, 10_000) && temp % 10 == 0

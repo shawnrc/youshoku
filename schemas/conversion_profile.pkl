@@ -104,13 +104,14 @@ class WBColorTemp {  // TODO string renderer (add K)
 
 typealias Strength = "STRONG"|"WEAK"|"OFF"
 
-/// bytearray containing processor version, color space, and other (unknown) options
+/// bytearray containing color space, processor version, and other (unknown) options
+/// AND with 0xFF000000 to get color space (FF = sRGB, FA = Adobe RGB)
 /// AND with 0x00FFFF00 to get the processor version
 typealias IOPCode = // these are hex values but rendered as strings in xml
-    "FA179502"    // X-Processor V: X-T5
-    | "FF129502"  // X-Processor Pro2: X-T2
-    | "FF129504"  // X-Processor Pro2: X100F
-    | "FF129506"  // X-Processor Pro2: X-H1
-    | "FF159501"  // X-Processor IV: X-T4, X-T3
-    | "FF159504"  // X-Processor IV: X100V
-    | "FF159505"  // Unknown (X-T50?)
+    "FF129502"    // sRGB, X-Processor Pro2: X-T2
+    | "FF129504"  // sRGB, X-Processor Pro2: X100F
+    | "FF129506"  // sRGB, X-Processor Pro2: X-H1
+    | "FF159501"  // sRGB, X-Processor IV: X-T4, X-T3
+    | "FF159504"  // sRGB, X-Processor IV: X100V
+    | "FF159505"  // sRGB, X-Processor IV: Unknown (X-E4?)
+    | "FA179502"  // Adobe RGB, X-Processor V: X-T5

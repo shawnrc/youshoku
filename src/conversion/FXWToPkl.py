@@ -17,13 +17,21 @@ os.makedirs('./out/bw', exist_ok=True)
 os.makedirs('./out/color', exist_ok=True)
 
 def camel_case(string: str) -> str:
-    subbed = re.sub(r"(_|-)+", " ", string).title().replace(" ", "")
+    subbed = re.sub(r"(_|-)+", " ", string).title().replace(" ", "").replace('&', 'And')
     return ''.join([subbed[0].lower(), subbed[1:]])
 
 def to_pkl(recipe: Dict[str, Any]) -> str:
-    grain_effect, grain_size = recipe['Grain Effect'].split()
-    is_color = recipe['Color or B&W'] == 'Color'
+    if len((grain_spec := recipe['Grain Effect'].split())) > 1:
+        grain_effect, grain_size = grain_spec
+    else:
+        grain_effect, grain_size = ('Off', "Small")
+    is_color = recipe['Color or B&W'] in {'Color', 'Sepia'}
     chrome_fx_blue = recipe['Color Chrome Effect Blue'] or "Off"
+
+    dr_spec = recipe['Dynamic Range']
+    dr_block = f'dynamicRange = "{dr_spec}"'
+    if 'DR-P' not in dr_spec:
+        dr_block += f'\n    highlight = {int(recipe['Highlight'])}\n    shadow = {int(recipe['Shadow'])}'
 
     toning: str = recipe['Toning']
     monochrome_wc = None
@@ -42,22 +50,28 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
     else:
         max_iso = "12800"
 
+    mc_block = ''
+    if monochrome_wc is not None:
+        mc_block = f'\n    monochromaticColorWC = {monochrome_wc}\n    monochromaticColorMG = {monochrome_mg}'
+
+    if 'K' in recipe['White Balance']:
+        white_balance = f'whiteBalance = "Temperature"\n    wbColorTemp = {recipe['White Balance'][:-1]}'
+    else:
+        white_balance = f'whiteBalance = "{recipe['White Balance']}"'
+
     return f"""import ".../schemas/x100VRecipe.pkl"
 
 {camel_case(recipe['Recipe'])} = new x100VRecipe.X100VRecipe {{
     name = "{recipe['Recipe']}"
-    filmSimulation = "{recipe['Film Simulation']}"{f'\nmonochromaticColorWC = {monochrome_wc}' if not is_color else ''}{f'\nmonochromaticColorMG = {monochrome_mg}' if not is_color else ''}
+    filmSimulation = "{recipe['Film Simulation']}"{mc_block}
     grainEffect = "{grain_effect}"
     grainSize = "{grain_size}"
     colorChromeEffect = "{recipe['Color Chrome Effect']}"
     colorChromeFxBlue = "{chrome_fx_blue}"
-    whiteBalance = "{recipe['White Balance']}"
+    {white_balance}
     wbShiftRed = {int(recipe['WB Shift Red'])}
     wbShiftBlue = {int(recipe['WB Shift Blue'])}
-    dynamicRange = "{recipe['Dynamic Range']}"
-    highlight = {int(recipe['Highlight'])}
-    shadow = {int(recipe['Shadow'])}
-    {f'color = {int(recipe["Color"])}' if is_color else ''}
+    {dr_block}{f'\ncolor = {int(recipe["Color"])}' if is_color else ''}
     sharpness = {int(recipe['Sharpening'])}
     noiseReduction = {int(recipe['Noise Reduction'])}
     clarity = {int(recipe['Clarity'])}
@@ -79,12 +93,23 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
 }}
     """
 
-def to_snake(string: str) -> str:
-    return '_'.join([token.lower() for token in string.split()])
+def sanitize(string: str) -> str:
+    return (string.lower()
+        .replace('(', '')
+        .replace(')', '')
+        .replace('/', ''))
+
+def normalize(string: str) -> str:
+    return '_'.join([sanitize(token) for token in string.split()])
+
+def has_xp5_setting(recipe: Dict[str, Any]) -> bool:
+    return any(len(it) > 2 for it in (recipe['Highlight'], recipe['Shadow']))
 
 for recipe in recipes:
-    if 'X100V' in recipe['Camera']:
+    if 'X100V' in recipe['Camera'] and not has_xp5_setting(recipe):
         chroma = 'bw' if recipe['Color or B&W'] == 'B&W' else 'color'
-        filename = f'./out/{chroma}/{to_snake(recipe["Recipe"])}.pkl'
-        with open(filename, 'w+') as output:
+        filename = normalize(recipe["Recipe"])
+        output_path = f'./out/{chroma}/{filename}.pkl'
+        with open(output_path, 'w+') as output:
             output.write(to_pkl(recipe))
+        # exit(0)
