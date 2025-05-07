@@ -2,13 +2,22 @@ class ConversionProfile {
     // TODO add renderer for XML attributes
     // application = "XRFC"
     // version = "1.12.0.0"
-
+    propertyGroup: PropertyGroup
 }
+
+// local oneOf = ()
 
 class Thirds {
+    // TODO string renderer
     wholeComponent: Int(isBetween(-3, 3)) = 0
-    fraction: 0 | 33 | 66 = 0
+    fraction: Int(Set(0, 33, 66).contains)
 }
+
+class WBColorTemp {  // TODO string renderer (add K)
+    value: Int(isBetween(2500, 10000)) = 10000  // TODO custom validator to ensure steps of 10K
+}
+
+typealias Strength = "STRONG" | "WEAK" | "OFF"
 
 class PropertyGroup {
     // TODO xml attribute renderer
@@ -37,7 +46,30 @@ class PropertyGroup {
         | "S1x1" = "L3x2"
     imageQuality: "Fine" | "Normal" = "Fine"
     exposureBias: Thirds
-    dynamicRange: 100 | 200 | 400 = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
+    dynamicRange: Int(Set(100, 200, 400).contains) = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
     wideDRange: "0" | "P1" | "P2" = "0"  // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
-
+    filmSimulation: String(!isEmpty)     // simulations are defined by the camera
+    blackImageTone: Int(isBetween(-18, 18)) = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
+    monochromaticColor_RG: Int(isBetween(-18, 18)) = 0  // Monochromatic Color MG (Magenta/Green) component
+    grainEffect: Strength = "OFF"
+    grainEffectSize: "LARGE" | "SMALL" = "SMALL"
+    chromeEffect: Strength = "OFF"      // Color Chrome Effect
+    colorChromeBlue: Strength = "OFF"   // Color Chrome FX Blue
+    smoothSkinEffect: String = "OFF"
+    wbShootCond: "ON" | "OFF" = "OFF"
+    whiteBalance: String(!isEmpty) = "Auto"
+    wbShiftR: Int8
+    wbShiftB: Int8
+    wbColorTemp: WBColorTemp
+    highlightTone: Int8
+    shadowTone: Int8
+    color: Int8  // ignored with b&w
+    sharpness: Int8
+    noisReduction: Int8  // spelled as such
+    clarity: Int8
+    lensModulationOpt: String = "ON"
+    colorSpace: "sRGB" | "AdobeRGB" = "sRGB"
+    hdr: String
+    digitalTeleConv: "ON" | "OFF" = "OFF"
+    portraitEnhancer: String
 }
