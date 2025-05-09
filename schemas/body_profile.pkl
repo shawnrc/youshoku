@@ -1,0 +1,22 @@
+class BodyProfile {
+    model:
+        "X-H1"
+        | "X-H2"
+        | "X-H2S"
+        | "X-Pro2"
+        | "X-Pro3"
+        | "X-E3"
+        | "X-E4"
+        | "X100F"
+        | "X100V"
+        | "X100VI"
+        | "X-T2"
+        | "X-T3"
+        | "X-T4"
+        | "X-T5"
+        | "X-T30"
+        | "X-T30II"
+        | "X-T50"
+    iopCode: String
+    serialNumber: String(length == 30)
+}

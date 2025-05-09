@@ -1,0 +1,59 @@
+import "pkl:xml"
+
+import* "./out/bw/*.pkl" as renderedRecipes
+import "schemas/conversion_profile.pkl"
+import "schemas/film_simulation.pkl" as Simulations
+import "schemas/whiteBalance.pkl" as WhiteBalance
+
+recipes {
+    for (mapping in renderedRecipes) {
+        new conversion_profile.ConversionProfile {
+            propertyGroup {
+                serialNumber = read("env:SERIAL_NUMBER")
+                tetherRAWConditonCode = "X100V_0200"
+                iopCode = "FF159504"
+                when (mapping.recipe.dynamicRange.contains("Auto")) {
+                    dynamicRange = 100
+                } else {
+                    dynamicRange = mapping.recipe.dynamicRange.drop(2).toInt()
+                }
+                filmSimulation = Simulations.lookup[mapping.recipe.filmSimulation]
+                blackImageTone = mapping.recipe.monochromaticColorWC
+                monochromaticColor_RG = mapping.recipe.monochromaticColorMG
+                grainEffect = mapping.recipe.grainEffect.toUpperCase()
+                grainEffectSize = mapping.recipe.grainSize.toUpperCase()
+                chromeEffect = mapping.recipe.colorChromeEffect.toUpperCase()
+                colorChromeBlue = mapping.recipe.colorChromeFxBlue.toUpperCase()
+                whiteBalance = WhiteBalance.lookup[mapping.recipe.whiteBalance]
+                wbShiftR = mapping.recipe.wbShiftRed
+                wbShiftB = mapping.recipe.wbShiftBlue
+                highlightTone = mapping.recipe.highlight?.toFloat() ?? 0.0
+                shadowTone = mapping.recipe.shadow?.toFloat() ?? 0.0
+                color = mapping.recipe.color ?? 0
+                sharpness = mapping.recipe.sharpness
+                noisReduction = mapping.recipe.noiseReduction
+                clarity = mapping.recipe.clarity
+            }
+        }
+    }
+}
+
+output {
+    renderer = new xml.Renderer {
+        converters {
+            [conversion_profile.ConversionProfile] = (it) -> (xml.Element("ConversionProfile")) {
+                attributes {
+                    ["application"] = it.application
+                    ["version"] = it.version
+                }
+            }
+            [conversion_profile.PropertyGroup] = (it) -> (xml.Element("PropertyGroup")) {
+                attributes {
+                    ["device"] = it.device
+                    ["version"] = it.version
+                    ["label"] = it.label
+                }
+            }
+        }
+    }
+}

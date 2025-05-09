@@ -1,28 +1,47 @@
-import "filmSimulation.pkl"
+import "film_simulation.pkl"
 
 class ConversionProfile {
-    // TODO add renderer for XML attributes
-    // application = "XRFC"
-    // version = "1.12.0.0"
+    hidden application = "XRFC"
+    hidden version = "1.12.0.0"
     propertyGroup: PropertyGroup
 }
 
 class PropertyGroup {
-    // TODO xml attribute renderer
-    // device: String   // e.g. "X100V"
-    // version: String  // e.g. "X100V_0200"
-    // label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
+    hidden device: String   // e.g. "X100V"
+    hidden version: String  // e.g. "X100V_0200"
+    hidden label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
 
+    /// ConversionProfiles are tied to camera bodies and need a serial number to be used with X Raw Studio
     serialNumber: String(length == 30)
-    tetherRAWConditonCode: String  // same as PropertyGroup.version, also sic: missing second i in "Conditon"
-    editable: Boolean = true       // false in FP3 files
-    sourceFileName: String         // source raw filename in FP3 data
+
+    /// same as PropertyGroup.version, also sic: missing second i in "Conditon"
+    tetherRAWConditonCode: String
+
+    /// false in FP3 files
+    editable: Boolean = true
+
+    /// source raw filename in FP3 data
+    sourceFileName: String = ""
+
+    /// Unknown when this is used, probably in FP3
     fileError: String = "NONE"
-    rotationAngle: Int = 0         // may be enumerated (0, 90, 180)?
-    structVer: Int = 65536         // need to verify if this applies to all bodies
-    iopCode: IOPCode
-    shootingCondition: *"OFF"|"ON"  // not sure what this does
-    fileType: *"JPG"
+
+    /// may be enumerated (0, 90, 180)?
+    rotationAngle: Int = 0
+
+    /// need to verify if this applies to all bodies
+    structVer: Int = 65536
+
+    /// IOPCode array
+    iopCode: IopCode
+
+    /// not clear what this does
+    shootingCondition: *"OFF"|"ON"
+
+    /// unclear if this can be set to anything else
+    fileType: String = "JPG"
+
+    /// Output JPEG size and aspect ratio
     imageSize:
         *"L3x2"
         |"L16x9"
@@ -33,11 +52,19 @@ class PropertyGroup {
         |"S3x2"
         |"S16x9"
         |"S1x1"
+
+    /// JPEG image quality
     imageQuality: *"Fine"|"Normal"
-    exposureBias: Thirds  // Push/pull processing
-    dynamicRange: Int(isValidDynamicRange) = 100  // DR-Auto is a camera setting, not a conversion setting, and cannot be used here
-    wideDRange: *"0"|"P1"|"P2"       // D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
-    filmSimulation: FilmSimulation   // simulations are defined by the camera
+
+    /// Push/pull processing
+    exposureBias: Thirds
+
+    /// DR-Auto is a camera setting, not a conversion setting, and cannot be used here
+    dynamicRange: Int(isValidDynamicRange) = 100
+
+    /// D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
+    wideDRange: *"0"|"P1"|"P2"
+    filmSimulation: film_simulation.FilmSimulation   // simulations are defined by the camera
     blackImageTone: Int8 = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
     monochromaticColor_RG: Int8 = 0  // Monochromatic Color MG (Magenta/Green) component
     grainEffect: Strength = "OFF"
@@ -77,12 +104,11 @@ class PropertyGroup {
         | "800"
         | "800PLUS"
     digitalTeleConv: "ON"|*"OFF"
-    portraitEnhancer: String
+    portraitEnhancer: String = ""
 }
 
 const local isValidDynamicRange = (value) ->
     Set(100, 200, 400).contains(value)
-
 
 /// A fractional value incremented in thirds.
 /// The output format is /[PM]\dP\d\d/
@@ -95,8 +121,10 @@ const local isValidDynamicRange = (value) ->
 class Thirds {
     // TODO string renderer
     wholeComponent: Int(isBetween(-2, 3)) = 0
-    fraction: Int(Set(0, 33, 67).contains)
+    fraction: Int(isValidThird) = 0
 }
+
+const local isValidThird = (num) -> Set(0, 33, 67).contains(num)
 
 class WBColorTemp {  // TODO string renderer (add K)
     value: Int(isBetween(2500, 10000)) = 10000  // TODO custom validator to ensure steps of 10K
@@ -107,11 +135,11 @@ typealias Strength = "STRONG"|"WEAK"|"OFF"
 /// bytearray containing color space, processor version, and other (unknown) options
 /// AND with 0xFF000000 to get color space (FF = sRGB, FA = Adobe RGB)
 /// AND with 0x00FFFF00 to get the processor version
-typealias IOPCode = // these are hex values but rendered as strings in xml
+typealias IopCode = // these are hex values but rendered as strings in xml
     "FF129502"    // sRGB, X-Processor Pro2: X-T2
     | "FF129504"  // sRGB, X-Processor Pro2: X100F
     | "FF129506"  // sRGB, X-Processor Pro2: X-H1
-    | "FF159501"  // sRGB, X-Processor IV: X-T4, X-T3
+    | "FF159501"  // sRGB, X-Processor IV: X-T3
     | "FF159504"  // sRGB, X-Processor IV: X100V
-    | "FF159505"  // sRGB, X-Processor IV: Unknown (X-E4?)
+    | "FF159505"  // sRGB, X-Processor IV: X-T4
     | "FA179502"  // Adobe RGB, X-Processor V: X-T5

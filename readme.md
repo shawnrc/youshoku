@@ -1,10 +1,10 @@
 # yōshoku
 - [ ] conversionprofile reference schema
 - [ ] inheritance scheme for cameras
-    - [ ] x100v
+    - [x] x100v
     - [ ] x-pro3
     - [ ] whatever else i can get my hands on
-- [ ] fxw to fp1 conversion tool
+- [x] fxw to fp1 conversion tool
 - [ ] recipe manager
 
 ## Things I should mention
@@ -36,7 +36,7 @@ range than a narrower one that might unintuively look washed out).
 
 All three of these settings are mutually-exclusive. HDR even turns off other
 features. DR can't be turned off, so DR-P takes precedence over DR, and HDR
-technically takes precedence over DR-P, but can't really be used in recipes
+technically takes precedence over both, but can't really be used in recipes
 anyhow because it's a drive mode rather than an IQ setting.
 
 ### Unsupported devices

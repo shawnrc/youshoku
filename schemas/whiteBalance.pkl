@@ -1,0 +1,16 @@
+module WhiteBalance
+
+lookup = new Mapping {
+    ["Auto"] = "Auto"
+    ["Custom 1"] = "Custom1"
+    ["Custom 2"] = "Custom2"
+    ["Custom 3"] = "Custom3"
+    ["Temperature"] = "Temperature"
+    ["Daylight"] = "Daylight"
+    ["Shade"] = "Shade"
+    ["Fluorescent 1"] = "FLight1"
+    ["Fluorescent 2"] = "FLight2"
+    ["Fluorescent 3"] = "FLight3"
+    ["Incendescent"] = "Incand"
+    ["Underwater"] = "UWater"
+}

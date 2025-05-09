@@ -26,3 +26,23 @@ typealias FilmSimulation =
     | "BR"             // MONOCHROME+R FILTER
     | "BG"             // MONOCHROME+G FILTER
     | "Sepia"          // SEPIA
+
+lookup = new Mapping {
+    ["Provia"] = "Provia"
+    ["Velvia"] = "Velvia"
+    ["Astia"] = "Astia"
+    ["Classic Chrome"] = "Classic"
+    ["PRO Neg. Hi"] = "NEGAhi"
+    ["PRO Neg. Std"] = "NEGAStd"
+    ["Classic Negative"] = "ClassicNEGA"
+    ["Eterna"] = "Eterna"
+    ["Acros"] = "Acros"
+    ["Acros+Y"] = "AcrosYe"
+    ["Acros+R"] = "AcrosR"
+    ["Acros+G"] = "AcrosG"
+    ["Monochrome"] = "BW"
+    ["Monochrome+Y"] = "BYe"
+    ["Monochrome+R"] = "BR"
+    ["Monochrome+G"] = "BG"
+    ["Sepia"] = "Sepia"
+}

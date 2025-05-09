@@ -16,17 +16,13 @@ with open(sys.argv[1]) as blob:
 os.makedirs('./out/bw', exist_ok=True)
 os.makedirs('./out/color', exist_ok=True)
 
-def camel_case(string: str) -> str:
-    subbed = re.sub(r"(_|-)+", " ", string).title().replace(" ", "").replace('&', 'And')
-    return ''.join([subbed[0].lower(), subbed[1:]])
-
 def to_pkl(recipe: Dict[str, Any]) -> str:
     if len((grain_spec := recipe['Grain Effect'].split())) > 1:
         grain_effect, grain_size = grain_spec
     else:
         grain_effect, grain_size = ('Off', "Small")
     is_color = recipe['Color or B&W'] in {'Color', 'Sepia'}
-    chrome_fx_blue = recipe['Color Chrome Effect Blue'] or "Off"
+    chrome_fx_blue = recipe['Color Chrome Effect Blue'] or 'Off'
 
     dr_spec = recipe['Dynamic Range']
     dr_block = f'dynamicRange = "{dr_spec}"'
@@ -59,9 +55,11 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
     else:
         white_balance = f'whiteBalance = "{recipe['White Balance']}"'
 
-    return f"""import ".../schemas/x100VRecipe.pkl"
+    return f"""module RenderedRecipe
 
-{camel_case(recipe['Recipe'])} = new x100VRecipe.X100VRecipe {{
+import ".../schemas/x100VRecipe.pkl"
+
+recipe = new x100VRecipe.X100VRecipe {{
     name = "{recipe['Recipe']}"
     filmSimulation = "{recipe['Film Simulation']}"{mc_block}
     grainEffect = "{grain_effect}"
@@ -71,7 +69,7 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
     {white_balance}
     wbShiftRed = {int(recipe['WB Shift Red'])}
     wbShiftBlue = {int(recipe['WB Shift Blue'])}
-    {dr_block}{f'\ncolor = {int(recipe["Color"])}' if is_color else ''}
+    {dr_block}{f'\n    color = {int(recipe["Color"])}' if is_color else ''}
     sharpness = {int(recipe['Sharpening'])}
     noiseReduction = {int(recipe['Noise Reduction'])}
     clarity = {int(recipe['Clarity'])}
@@ -94,19 +92,16 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
     """
 
 def sanitize(string: str) -> str:
-    return (string.lower()
-        .replace('(', '')
-        .replace(')', '')
-        .replace('/', ''))
+    return ''.join([char for char in string if char not in {'(', ')', '/', '+', "'"}])
 
 def normalize(string: str) -> str:
-    return '_'.join([sanitize(token) for token in string.split()])
+    return '_'.join([sanitized.lower() for token in string.split() if (sanitized := sanitize(token))])
 
 def has_xp5_setting(recipe: Dict[str, Any]) -> bool:
     return any(len(it) > 2 for it in (recipe['Highlight'], recipe['Shadow']))
 
 for recipe in recipes:
-    if 'X100V' in recipe['Camera'] and not has_xp5_setting(recipe):
+    if 'X100V' in set(recipe['Camera'].split(', ')) and not has_xp5_setting(recipe):
         chroma = 'bw' if recipe['Color or B&W'] == 'B&W' else 'color'
         filename = normalize(recipe["Recipe"])
         output_path = f'./out/{chroma}/{filename}.pkl'
