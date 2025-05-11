@@ -57,7 +57,7 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
 
     return f"""amends ".../schemas/x100VRecipe.pkl"
 
-name = "{recipe['Recipe']}"
+name = "{recipe['Recipe'].replace('/', '.')}"
 filmSimulation = "{recipe['Film Simulation']}"{mc_block}
 grainEffect = "{grain_effect}"
 grainSize = "{grain_size}"
@@ -90,8 +90,8 @@ metadata {{
 def sanitize(string: str) -> str:
     return ''.join([char for char in string if char not in {'(', ')', '/', '+', "'"}])
 
-def normalize(string: str) -> str:
-    return '_'.join([sanitized.lower() for token in string.split() if (sanitized := sanitize(token))])
+# def normalize(string: str) -> str:
+#     return '_'.join([sanitized.lower() for token in string.split() if (sanitized := sanitize(token))])
 
 def has_xp5_setting(recipe: Dict[str, Any]) -> bool:
     return any(len(it) > 2 for it in (recipe['Highlight'], recipe['Shadow']))
@@ -99,7 +99,7 @@ def has_xp5_setting(recipe: Dict[str, Any]) -> bool:
 for recipe in recipes:
     if 'X100V' in set(recipe['Camera'].split(', ')) and not has_xp5_setting(recipe):
         chroma = 'bw' if recipe['Color or B&W'] == 'B&W' else 'color'
-        filename = normalize(recipe["Recipe"])
+        filename = recipe["Recipe"].replace('/', '.')
         output_path = f'./out/{chroma}/{filename}.pkl'
         with open(output_path, 'w+') as output:
             output.write(to_pkl(recipe))

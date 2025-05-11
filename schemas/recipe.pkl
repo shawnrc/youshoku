@@ -1,7 +1,13 @@
-abstract module Recipe
-
 /// Defines the core of a Fujifilm film recipe/custom preset.
 /// Abstract properties vary in their shapes, as defined by the camera a recipe is written for.
+
+abstract module Recipe
+
+import "pkl:xml"
+
+import "conversion_profile.pkl"
+import "film_simulation.pkl" as Simulations
+import "whiteBalance.pkl" as _whiteBalance
 
 name: String(!isEmpty)
 
@@ -63,3 +69,62 @@ typealias Strength = "Strong"|"Weak"|*"Off"
 
 const local isValidColorTemp = (temp: Int) ->
     temp.isBetween(2500, 10_000) && temp % 10 == 0
+
+local _serialNumber = read("env:SERIAL_NUMBER")
+
+local conversionProfile = new conversion_profile.ConversionProfile {
+    propertyGroup {
+        device = "X100V"
+        version = "X100V_0200"
+        label = name
+        SerialNumber = _serialNumber
+        IOPCode = "FF159504"
+        DynamicRange = if (dynamicRange.contains("Auto")) 100 else dynamicRange.drop(2).toInt()
+        FilmSimulation = Simulations.lookup[filmSimulation]
+        BlackImageTone = monochromaticColorWC
+        MonochromaticColor_RG = monochromaticColorMG
+        GrainEffect = grainEffect.toUpperCase()
+        GrainEffectSize = grainSize.toUpperCase()
+        ChromeEffect = colorChromeEffect.toUpperCase()
+        ColorChromeBlue = colorChromeFxBlue.toUpperCase()
+        WhiteBalance = _whiteBalance.lookup[whiteBalance]
+        WBColorTemp {
+            value = wbColorTemp ?? 10_000
+        }
+        WBShiftR = wbShiftRed
+        WBShiftB = wbShiftBlue
+        HighlightTone = highlight?.toFloat() ?? 0.0
+        ShadowTone = shadow?.toFloat() ?? 0.0
+        Color = color ?? 0
+        Sharpness = sharpness
+        NoisReduction = noiseReduction
+        Clarity = clarity
+    }
+}
+
+output {
+    value = conversionProfile
+    renderer = new xml.Renderer {
+        converters {
+            [conversion_profile.ConversionProfile] = (it) -> (xml.Element("ConversionProfile")) {
+                attributes {
+                    ["application"] = it.application
+                    ["version"] = it.version
+                }
+                xml.Inline(it)
+            }
+            [conversion_profile.PropertyGroup] = (it) -> (xml.Element("PropertyGroup")) {
+                attributes {
+                    ["device"] = it.device
+                    ["version"] = it.version
+                    ["label"] = it.label
+                }
+                xml.Inline(it)
+            }
+            [conversion_profile.Thirds] = (it) -> (xml.Element("ExposureBias")) {
+                "\(if (it.wholeComponent >= 0) "P" else "M")\(it.wholeComponent)P\(it.fraction.toString().padStart(2, "0"))"
+            }
+            [conversion_profile.WBColorTemp] = (it) -> (xml.Element("WBColorTemp")) { "\(it.value)K" }
+        }
+    }
+}
