@@ -15,7 +15,7 @@ class PropertyGroup {
     serialNumber: String(length == 30)
 
     /// same as PropertyGroup.version, also sic: missing second i in "Conditon"
-    tetherRAWConditonCode: String
+    tetherRAWConditonCode: String = version
 
     /// false in FP3 files
     editable: Boolean = true
@@ -127,7 +127,7 @@ class Thirds {
 const local isValidThird = (num) -> Set(0, 33, 67).contains(num)
 
 class WBColorTemp {  // TODO string renderer (add K)
-    value: Int(isBetween(2500, 10000)) = 10000  // TODO custom validator to ensure steps of 10K
+    value: Int(isBetween(2500, 10000), this % 10 == 0) = 10000
 }
 
 typealias Strength = "STRONG"|"WEAK"|"OFF"

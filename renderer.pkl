@@ -2,37 +2,37 @@ import "pkl:xml"
 
 import* "./out/bw/*.pkl" as renderedRecipes
 import "schemas/conversion_profile.pkl"
+import "schemas/X100VRecipe.pkl"
 import "schemas/film_simulation.pkl" as Simulations
 import "schemas/whiteBalance.pkl" as WhiteBalance
 
-recipes {
-    for (mapping in renderedRecipes) {
+recipes: Listing<conversion_profile.ConversionProfile> = new {
+    for (recipe in renderedRecipes) {
         new conversion_profile.ConversionProfile {
             propertyGroup {
+                device = "X100V"
+                version = "X100V_0200"
+                label = recipe.name
                 serialNumber = read("env:SERIAL_NUMBER")
-                tetherRAWConditonCode = "X100V_0200"
+                // tetherRAWConditonCode = "X100V_0200"
                 iopCode = "FF159504"
-                when (mapping.recipe.dynamicRange.contains("Auto")) {
-                    dynamicRange = 100
-                } else {
-                    dynamicRange = mapping.recipe.dynamicRange.drop(2).toInt()
-                }
-                filmSimulation = Simulations.lookup[mapping.recipe.filmSimulation]
-                blackImageTone = mapping.recipe.monochromaticColorWC
-                monochromaticColor_RG = mapping.recipe.monochromaticColorMG
-                grainEffect = mapping.recipe.grainEffect.toUpperCase()
-                grainEffectSize = mapping.recipe.grainSize.toUpperCase()
-                chromeEffect = mapping.recipe.colorChromeEffect.toUpperCase()
-                colorChromeBlue = mapping.recipe.colorChromeFxBlue.toUpperCase()
-                whiteBalance = WhiteBalance.lookup[mapping.recipe.whiteBalance]
-                wbShiftR = mapping.recipe.wbShiftRed
-                wbShiftB = mapping.recipe.wbShiftBlue
-                highlightTone = mapping.recipe.highlight?.toFloat() ?? 0.0
-                shadowTone = mapping.recipe.shadow?.toFloat() ?? 0.0
-                color = mapping.recipe.color ?? 0
-                sharpness = mapping.recipe.sharpness
-                noisReduction = mapping.recipe.noiseReduction
-                clarity = mapping.recipe.clarity
+                dynamicRange = if (recipe.dynamicRange.contains("Auto")) 100 else recipe.dynamicRange.drop(2).toInt()
+                filmSimulation = Simulations.lookup[recipe.filmSimulation]
+                blackImageTone = recipe.monochromaticColorWC
+                monochromaticColor_RG = recipe.monochromaticColorMG
+                grainEffect = recipe.grainEffect.toUpperCase()
+                grainEffectSize = recipe.grainSize.toUpperCase()
+                chromeEffect = recipe.colorChromeEffect.toUpperCase()
+                colorChromeBlue = recipe.colorChromeFxBlue.toUpperCase()
+                whiteBalance = WhiteBalance.lookup[recipe.whiteBalance]
+                wbShiftR = recipe.wbShiftRed
+                wbShiftB = recipe.wbShiftBlue
+                highlightTone = recipe.highlight?.toFloat() ?? 0.0
+                shadowTone = recipe.shadow?.toFloat() ?? 0.0
+                color = recipe.color ?? 0
+                sharpness = recipe.sharpness
+                noisReduction = recipe.noiseReduction
+                clarity = recipe.clarity
             }
         }
     }
@@ -46,6 +46,7 @@ output {
                     ["application"] = it.application
                     ["version"] = it.version
                 }
+                xml.Inline(it)
             }
             [conversion_profile.PropertyGroup] = (it) -> (xml.Element("PropertyGroup")) {
                 attributes {
@@ -53,6 +54,13 @@ output {
                     ["version"] = it.version
                     ["label"] = it.label
                 }
+                xml.Inline(it)
+            }
+            [conversion_profile.Thirds] = (it) -> (xml.Element("exposureBias")) {
+                (if (it.wholeComponent >= 0) "P" else "M") + "\(it.wholeComponent)P\(if (it.fraction < 10) "0" else "")\(it.fraction)"
+            }
+            [conversion_profile.WBColorTemp] = (it) -> (xml.Element("wbColorTemp")) {
+                "\(it.value)K"
             }
         }
     }

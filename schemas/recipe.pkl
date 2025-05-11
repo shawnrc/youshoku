@@ -1,7 +1,7 @@
 abstract module Recipe
 
-/// Defines the core fo
-
+/// Defines the core of a Fujifilm film recipe/custom preset.
+/// Abstract properties vary in their shapes, as defined by the camera a recipe is written for.
 
 name: String(!isEmpty)
 

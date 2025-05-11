@@ -55,41 +55,37 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
     else:
         white_balance = f'whiteBalance = "{recipe['White Balance']}"'
 
-    return f"""module RenderedRecipe
+    return f"""amends ".../schemas/x100VRecipe.pkl"
 
-import ".../schemas/x100VRecipe.pkl"
+name = "{recipe['Recipe']}"
+filmSimulation = "{recipe['Film Simulation']}"{mc_block}
+grainEffect = "{grain_effect}"
+grainSize = "{grain_size}"
+colorChromeEffect = "{recipe['Color Chrome Effect']}"
+colorChromeFxBlue = "{chrome_fx_blue}"
+{white_balance}
+wbShiftRed = {int(recipe['WB Shift Red'])}
+wbShiftBlue = {int(recipe['WB Shift Blue'])}
+{dr_block}{f'\n    color = {int(recipe["Color"])}' if is_color else ''}
+sharpness = {int(recipe['Sharpening'])}
+noiseReduction = {int(recipe['Noise Reduction'])}
+clarity = {int(recipe['Clarity'])}
+maxIso = {max_iso}
+exposureCompensation = "{recipe['Exposure Compensation']}"
 
-recipe = new x100VRecipe.X100VRecipe {{
-    name = "{recipe['Recipe']}"
-    filmSimulation = "{recipe['Film Simulation']}"{mc_block}
-    grainEffect = "{grain_effect}"
-    grainSize = "{grain_size}"
-    colorChromeEffect = "{recipe['Color Chrome Effect']}"
-    colorChromeFxBlue = "{chrome_fx_blue}"
-    {white_balance}
-    wbShiftRed = {int(recipe['WB Shift Red'])}
-    wbShiftBlue = {int(recipe['WB Shift Blue'])}
-    {dr_block}{f'\n    color = {int(recipe["Color"])}' if is_color else ''}
-    sharpness = {int(recipe['Sharpening'])}
-    noiseReduction = {int(recipe['Noise Reduction'])}
-    clarity = {int(recipe['Clarity'])}
-    maxIso = {max_iso}
-    exposureCompensation = "{recipe['Exposure Compensation']}"
-
-    metadata {{
-        author {{
-            name = "Ritchie Roesch"
-            url = "https://ritchieroesch.com"
-        }}
-        transcriber {{
-            name = "Shawn Chowdhury"
-            url = "https://github.com/shawnrc"
-        }}
-        source = "{recipe['Recipe Website']}"
-        date = "{recipe['Date']}"
+metadata {{
+    author {{
+        name = "Ritchie Roesch"
+        url = "https://ritchieroesch.com"
     }}
+    transcriber {{
+        name = "Shawn Chowdhury"
+        url = "https://github.com/shawnrc"
+    }}
+    source = "{recipe['Recipe Website']}"
+    date = "{recipe['Date']}"
 }}
-    """
+"""
 
 def sanitize(string: str) -> str:
     return ''.join([char for char in string if char not in {'(', ')', '/', '+', "'"}])
