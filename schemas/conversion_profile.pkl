@@ -72,7 +72,7 @@ class PropertyGroup {
     ChromeEffect: Strength = "OFF"     // Color Chrome Effect
     ColorChromeBlue: Strength = "OFF"  // Color Chrome FX Blue
     SmoothSkinEffect: "ON"|*"OFF"
-    WbShootCond: "ON"|*"OFF"
+    WBShootCond: "ON"|*"OFF"
     WhiteBalance:
         "Auto"           // Auto White Balance
         | "Custom1"      // Custom 1
