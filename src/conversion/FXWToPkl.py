@@ -48,10 +48,10 @@ def to_pkl(recipe: Dict[str, Any]) -> str:
 
     mc_block = ''
     if monochrome_wc is not None:
-        mc_block = f'\n    monochromaticColorWC = {monochrome_wc}\n    monochromaticColorMG = {monochrome_mg}'
+        mc_block = f'\nmonochromaticColorWC = {monochrome_wc}\nmonochromaticColorMG = {monochrome_mg}'
 
     if 'K' in recipe['White Balance']:
-        white_balance = f'whiteBalance = "Temperature"\n    wbColorTemp = {recipe['White Balance'][:-1]}'
+        white_balance = f'whiteBalance = "Temperature"\nwbColorTemp = {recipe['White Balance'][:-1]}'
     else:
         white_balance = f'whiteBalance = "{recipe['White Balance']}"'
 
@@ -66,7 +66,7 @@ colorChromeFxBlue = "{chrome_fx_blue}"
 {white_balance}
 wbShiftRed = {int(recipe['WB Shift Red'])}
 wbShiftBlue = {int(recipe['WB Shift Blue'])}
-{dr_block}{f'\n    color = {int(recipe["Color"])}' if is_color else ''}
+{dr_block}{f'\ncolor = {int(recipe["Color"])}' if is_color else ''}
 sharpness = {int(recipe['Sharpening'])}
 noiseReduction = {int(recipe['Noise Reduction'])}
 clarity = {int(recipe['Clarity'])}

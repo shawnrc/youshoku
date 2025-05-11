@@ -4,7 +4,9 @@ import* "./out/bw/*.pkl" as renderedRecipes
 import "schemas/conversion_profile.pkl"
 import "schemas/X100VRecipe.pkl"
 import "schemas/film_simulation.pkl" as Simulations
-import "schemas/whiteBalance.pkl" as WhiteBalance
+import "schemas/whiteBalance.pkl" as whiteBalance
+
+local _serialNumber = read("env:SERIAL_NUMBER")
 
 recipes: Listing<conversion_profile.ConversionProfile> = new {
     for (recipe in renderedRecipes) {
@@ -13,26 +15,28 @@ recipes: Listing<conversion_profile.ConversionProfile> = new {
                 device = "X100V"
                 version = "X100V_0200"
                 label = recipe.name
-                serialNumber = read("env:SERIAL_NUMBER")
-                // tetherRAWConditonCode = "X100V_0200"
-                iopCode = "FF159504"
-                dynamicRange = if (recipe.dynamicRange.contains("Auto")) 100 else recipe.dynamicRange.drop(2).toInt()
-                filmSimulation = Simulations.lookup[recipe.filmSimulation]
-                blackImageTone = recipe.monochromaticColorWC
-                monochromaticColor_RG = recipe.monochromaticColorMG
-                grainEffect = recipe.grainEffect.toUpperCase()
-                grainEffectSize = recipe.grainSize.toUpperCase()
-                chromeEffect = recipe.colorChromeEffect.toUpperCase()
-                colorChromeBlue = recipe.colorChromeFxBlue.toUpperCase()
-                whiteBalance = WhiteBalance.lookup[recipe.whiteBalance]
-                wbShiftR = recipe.wbShiftRed
-                wbShiftB = recipe.wbShiftBlue
-                highlightTone = recipe.highlight?.toFloat() ?? 0.0
-                shadowTone = recipe.shadow?.toFloat() ?? 0.0
-                color = recipe.color ?? 0
-                sharpness = recipe.sharpness
-                noisReduction = recipe.noiseReduction
-                clarity = recipe.clarity
+                SerialNumber = _serialNumber
+                IOPCode = "FF159504"
+                DynamicRange = if (recipe.dynamicRange.contains("Auto")) 100 else recipe.dynamicRange.drop(2).toInt()
+                FilmSimulation = Simulations.lookup[recipe.filmSimulation]
+                BlackImageTone = recipe.monochromaticColorWC
+                MonochromaticColor_RG = recipe.monochromaticColorMG
+                GrainEffect = recipe.grainEffect.toUpperCase()
+                GrainEffectSize = recipe.grainSize.toUpperCase()
+                ChromeEffect = recipe.colorChromeEffect.toUpperCase()
+                ColorChromeBlue = recipe.colorChromeFxBlue.toUpperCase()
+                WhiteBalance = whiteBalance.lookup[recipe.whiteBalance]
+                WBColorTemp {
+                    value = recipe.wbColorTemp ?? 10_000
+                }
+                WBShiftR = recipe.wbShiftRed
+                WBShiftB = recipe.wbShiftBlue
+                HighlightTone = recipe.highlight?.toFloat() ?? 0.0
+                ShadowTone = recipe.shadow?.toFloat() ?? 0.0
+                Color = recipe.color ?? 0
+                Sharpness = recipe.sharpness
+                NoisReduction = recipe.noiseReduction
+                Clarity = recipe.clarity
             }
         }
     }
@@ -56,12 +60,10 @@ output {
                 }
                 xml.Inline(it)
             }
-            [conversion_profile.Thirds] = (it) -> (xml.Element("exposureBias")) {
-                (if (it.wholeComponent >= 0) "P" else "M") + "\(it.wholeComponent)P\(if (it.fraction < 10) "0" else "")\(it.fraction)"
+            [conversion_profile.Thirds] = (it) -> (xml.Element("ExposureBias")) {
+                "\(if (it.wholeComponent >= 0) "P" else "M")\(it.wholeComponent)P\(it.fraction.toString().padStart(2, "0"))"
             }
-            [conversion_profile.WBColorTemp] = (it) -> (xml.Element("wbColorTemp")) {
-                "\(it.value)K"
-            }
+            [conversion_profile.WBColorTemp] = (it) -> (xml.Element("WBColorTemp")) { "\(it.value)K" }
         }
     }
 }

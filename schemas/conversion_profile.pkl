@@ -12,37 +12,37 @@ class PropertyGroup {
     hidden label: String    // e.g. "Fujicolor Superia 800", must match filename, i.e. "$label.FP1"
 
     /// ConversionProfiles are tied to camera bodies and need a serial number to be used with X Raw Studio
-    serialNumber: String(length == 30)
+    SerialNumber: String(length == 30)
 
     /// same as PropertyGroup.version, also sic: missing second i in "Conditon"
-    tetherRAWConditonCode: String = version
+    TetherRAWConditonCode: String = version
 
-    /// false in FP3 files
-    editable: Boolean = true
+    /// false in FP3 files. Custom union because of XML case-sensitivity
+    Editable: *"TRUE"|"FALSE"
 
     /// source raw filename in FP3 data
-    sourceFileName: String = ""
+    SourceFileName: String = ""
 
     /// Unknown when this is used, probably in FP3
-    fileError: String = "NONE"
+    Fileerror: String = "NONE"
 
     /// may be enumerated (0, 90, 180)?
-    rotationAngle: Int = 0
+    RotationAngle: Int = 0
 
     /// need to verify if this applies to all bodies
-    structVer: Int = 65536
+    StructVer: Int = 65536
 
     /// IOPCode array
-    iopCode: IopCode
+    IOPCode: IopCode
 
     /// not clear what this does
-    shootingCondition: *"OFF"|"ON"
+    ShootingCondition: *"OFF"|"ON"
 
     /// unclear if this can be set to anything else
-    fileType: String = "JPG"
+    FileType: String = "JPG"
 
     /// Output JPEG size and aspect ratio
-    imageSize:
+    ImageSize:
         *"L3x2"
         |"L16x9"
         |"L1x1"
@@ -54,26 +54,26 @@ class PropertyGroup {
         |"S1x1"
 
     /// JPEG image quality
-    imageQuality: *"Fine"|"Normal"
+    ImageQuality: *"Fine"|"Normal"
 
     /// Push/pull processing
-    exposureBias: Thirds
+    ExposureBias: Thirds
 
     /// DR-Auto is a camera setting, not a conversion setting, and cannot be used here
-    dynamicRange: Int(isValidDynamicRange) = 100
+    DynamicRange: Int(isValidDynamicRange) = 100
 
     /// D Range Priority: [Off, Weak, Strong] (cannot be set to Auto)
-    wideDRange: *"0"|"P1"|"P2"
-    filmSimulation: film_simulation.FilmSimulation   // simulations are defined by the camera
-    blackImageTone: Int8 = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
-    monochromaticColor_RG: Int8 = 0  // Monochromatic Color MG (Magenta/Green) component
-    grainEffect: Strength = "OFF"
-    grainEffectSize: "LARGE"|*"SMALL"
-    chromeEffect: Strength = "OFF"     // Color Chrome Effect
-    colorChromeBlue: Strength = "OFF"  // Color Chrome FX Blue
-    smoothSkinEffect: "ON"|*"OFF"
-    wbShootCond: "ON"|*"OFF"
-    whiteBalance:
+    WideDRange: *"0"|"P1"|"P2"
+    FilmSimulation: film_simulation.FilmSimulation   // simulations are defined by the camera
+    BlackImageTone: Int8 = 0         // Monochromatic Color WC (Warm/Cool) component. may be device-specific
+    MonochromaticColor_RG: Int8 = 0  // Monochromatic Color MG (Magenta/Green) component
+    GrainEffect: Strength = "OFF"
+    GrainEffectSize: "LARGE"|*"SMALL"
+    ChromeEffect: Strength = "OFF"     // Color Chrome Effect
+    ColorChromeBlue: Strength = "OFF"  // Color Chrome FX Blue
+    SmoothSkinEffect: "ON"|*"OFF"
+    WbShootCond: "ON"|*"OFF"
+    WhiteBalance:
         "Auto"           // Auto White Balance
         | "Custom1"      // Custom 1
         | "Custom2"      // Custom 2
@@ -86,25 +86,25 @@ class PropertyGroup {
         | "FLight3"      // Fluorescent Light-3
         | "Incand"       // Incendescent
         | "UWater"       // Underwater
-    wbShiftR: Int8
-    wbShiftB: Int8
-    wbColorTemp: WBColorTemp
-    highlightTone: Float
-    shadowTone: Float  // these were Ints up until the X-Trans V
-    color: Int8        // ignored with b&w
-    sharpness: Int8
-    noisReduction: Int8  // spelled as such
-    clarity: Int8
-    lensModulationOpt: *"ON"|"OFF"
-    colorSpace: *"sRGB"|"AdobeRGB"
-    hdr:  // any enabled mode disables DR, DR-P, Tone Curve, and Clarity
+    WBShiftR: Int8
+    WBShiftB: Int8
+    WBColorTemp: WBColorTemp
+    HighlightTone: Float
+    ShadowTone: Float  // these were Ints up until the X-Trans V
+    Color: Int8        // ignored with b&w
+    Sharpness: Int8
+    NoisReduction: Int8  // spelled as such
+    Clarity: Int8
+    LensModulationOpt: *"ON"|"OFF"
+    ColorSpace: *"sRGB"|"AdobeRGB"
+    HDR:  // any enabled mode disables DR, DR-P, Tone Curve, and Clarity
         *""
         | "200"
         | "400"
         | "800"
         | "800PLUS"
-    digitalTeleConv: "ON"|*"OFF"
-    portraitEnhancer: String = ""
+    DigitalTeleConv: "ON"|*"OFF"
+    PortraitEnhancer: String = ""
 }
 
 const local isValidDynamicRange = (value) ->
